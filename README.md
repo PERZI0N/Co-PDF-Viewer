@@ -17,9 +17,9 @@ npm start
 ```
 
 
-<span style="color: red; font-size: 1.5em;">Issues</span>
+## Issues
 
-The PDF is only updated when a new pdf is uploaded by the admin else it wont show for the existing user
+The PDF is only updated when a new PDF is uploaded by the admin else it won't show for the existing user
 but if users exist and a new pdf is uploaded by the admin it appears for all the existing users.
 
 
