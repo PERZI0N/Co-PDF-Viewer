@@ -17,13 +17,12 @@ npm start
 ```
 
 
-<font color="red"> Issues </font>
+<span style="color: red; font-size: 1.5em;">Issues</span>
 
 The PDF is only updated when a new pdf is uploaded by the admin else it wont show for the existing user
 but if users exist and a new pdf is uploaded by the admin it appears for all the existing users.
 
 
 ## To know
-<font color="red"> Only one user can become an admin at a time. </font>
-</br>
-<font color="red"> The password to become admin is **vaidik@VIT** </font>
+<span style="color: red; font-weight: bold;">Only one user can become an admin at a time.</span>
+<span style="color: red; font-weight: bold;">The password to become admin is ***vaidik@VIT*** </span>
