@@ -17,7 +17,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs
 const CONFIG = {
   WEBSOCKET_URL: "ws://localhost:8080/ws",
   UPLOAD_URL: "http://localhost:8080/upload",
-  ADMIN_PASSWORD: "20MIC0061",
+  ADMIN_PASSWORD: "vaidik@VIT",
   MAX_FILE_SIZE: 10 * 1024 * 1024,
   ALLOWED_FILE_TYPES: ["application/pdf"],
   RECONNECT_DELAY: 2000,

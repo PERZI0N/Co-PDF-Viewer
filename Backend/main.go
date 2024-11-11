@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	ADMIN_PASSWORD = "20MIC0061"
+	ADMIN_PASSWORD = "vaidik@VIT"
 	UPLOAD_DIR     = "./uploads"
 	MAX_FILE_SIZE  = 10 << 20 // 10MB
 	MAX_CLIENTS = 100
