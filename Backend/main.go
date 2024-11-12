@@ -243,7 +243,7 @@ func main() {
 	go handleMessages()
 
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
+		AllowedOrigins:   []string{"https://6733115a5c8bad7fcb48fb21--helpful-sawine-40cee4.netlify.app/"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
