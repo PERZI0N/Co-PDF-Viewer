@@ -10,6 +10,10 @@ import {
   UserCircle,
   Lock,
   Download,
+  ZoomIn,
+  ZoomOut,
+  MonitorPlay,
+  Settings,
 } from "lucide-react";
 
 //connecting to pdfjslib
@@ -28,16 +32,23 @@ const Toast = React.memo(({ message, type = "info", onClose }) => (
     initial={{ opacity: 0, y: 50 }}
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, y: 20 }}
-    className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-lg ${
-      type === "error" ? "bg-red-500" : "bg-gray-800"
-    } text-white z-50`}
+    className="fixed bottom-4 right-4 p-4 rounded-xl shadow-2xl bg-gradient-to-r from-gray-900 to-gray-800 text-white z-50 flex items-center space-x-3"
   >
-    {message}
-    <button onClick={onClose} className="ml-4 text-white/80 hover:text-white">
+    {type === "error" ? (
+      <div className="w-2 h-2 rounded-full bg-red-500" />
+    ) : (
+      <div className="w-2 h-2 rounded-full bg-green-500" />
+    )}
+    <span className="text-sm font-medium">{message}</span>
+    <button
+      onClick={onClose}
+      className="ml-2 text-white/80 hover:text-white transition-colors"
+    >
       ×
     </button>
   </motion.div>
 ));
+
 // auth to match the passwords
 const AdminLoginModal = React.memo(({ onLogin, onClose }) => {
   const [password, setPassword] = useState("");
@@ -54,37 +65,57 @@ const AdminLoginModal = React.memo(({ onLogin, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-96">
-        <h2 className="text-xl font-bold mb-4">Become Prerenter</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter presenter password"
-              className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-            />
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-[400px] border border-gray-200 dark:border-gray-700"
+      >
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="p-3 bg-blue-500/10 rounded-lg">
+            <MonitorPlay className="w-6 h-6 text-blue-500" />
           </div>
-          {error && <p className="text-red-500 mb-4">{error}</p>}
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Login
-            </button>
+          <h2 className="text-2xl font-semibold">Become Presenter</h2>
+        </div>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onLogin();
+          }}
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                Presenter Password
+              </label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center space-x-2"
+              >
+                <Lock className="w-4 h-4" />
+                <span>Login as Presenter</span>
+              </button>
+            </div>
           </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 });
@@ -381,75 +412,135 @@ const PDFViewer = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center text-gray-600 dark:text-gray-300">
-              <Users className="w-5 h-5 mr-2" />
-              <span>{activeUsers} viewing</span>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+          {/* Header */}
+          <div className="border-b border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                  <Users className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                    {activeUsers} viewing
+                  </span>
+                </div>
+
+                {isAdmin ? (
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleFileUpload}
+                      disabled={loading}
+                      className="hidden"
+                      id="pdf-upload"
+                    />
+                    <label
+                      htmlFor="pdf-upload"
+                      className={`flex items-center px-6 py-2 bg-blue-500 text-white rounded-lg cursor-pointer hover:bg-blue-600 transition-colors ${
+                        loading ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                    >
+                      {loading ? (
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      ) : (
+                        <Upload className="w-5 h-5 mr-2" />
+                      )}
+                      {loading ? "Uploading..." : "Upload PDF"}
+                    </label>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowAdminLogin(true)}
+                    className="flex items-center px-6 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <Lock className="w-5 h-5 mr-2" />
+                    Become Presenter
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() =>
+                      setScale((scale) => Math.max(scale - 0.1, 0.5))
+                    }
+                    className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <ZoomOut className="w-5 h-5" />
+                  </button>
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                    {Math.round(scale * 100)}%
+                  </span>
+                  <button
+                    onClick={() =>
+                      setScale((scale) => Math.min(scale + 0.1, 2))
+                    }
+                    className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <ZoomIn className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {pdfUrl && (
+                  <button
+                    onClick={downloadPDF}
+                    className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <Download className="w-5 h-5 mr-2" />
+                    Download
+                  </button>
+                )}
+              </div>
             </div>
-            {isAdmin ? (
-              <div className="relative">
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileUpload}
-                  disabled={loading}
-                  className="hidden"
-                  id="pdf-upload"
-                />
-                <label
-                  htmlFor="pdf-upload"
-                  className={`flex items-center px-4 py-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 ${
-                    loading ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  {loading ? (
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  ) : (
-                    <Upload className="w-5 h-5 mr-2" />
-                  )}
-                  {loading ? "Uploading..." : "Upload PDF"}
-                </label>
+          </div>
+
+          {/* PDF Display */}
+          <div className="p-8">
+            {pdfUrl ? (
+              <div className="flex flex-col items-center">
+                <div className="relative overflow-auto max-h-[calc(100vh-300px)] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+                  <canvas
+                    ref={canvasRef}
+                    className="mx-auto shadow-lg rounded-lg"
+                  />
+                </div>
+
+                <div className="mt-6 flex items-center justify-center space-x-6">
+                  <button
+                    onClick={() => changePage(pageNumber - 1)}
+                    disabled={pageNumber <= 1 || !isAdmin}
+                    className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                    Page {pageNumber} of {numPages}
+                  </span>
+                  <button
+                    onClick={() => changePage(pageNumber + 1)}
+                    disabled={pageNumber >= numPages || !isAdmin}
+                    className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </div>
               </div>
             ) : (
-              <button
-                onClick={() => setShowAdminLogin(true)}
-                className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
-              >
-                <Lock className="w-5 h-5 mr-2" />
-                Become Presenter
-              </button>
+              <div className="flex flex-col items-center justify-center h-[60vh]">
+                <div className="p-6 bg-gray-50 dark:bg-gray-700/50 rounded-2xl mb-4">
+                  <UserCircle className="w-16 h-16 text-gray-400 dark:text-gray-500" />
+                </div>
+                <p className="text-lg text-gray-500 dark:text-gray-400">
+                  {isAdmin
+                    ? "Upload a PDF to begin presenting"
+                    : "Waiting for presenter to upload a PDF"}
+                </p>
+              </div>
             )}
           </div>
-          {pdfUrl && (
-            <button
-              onClick={downloadPDF}
-              className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
-            >
-              <Download className="w-5 h-5 mr-2" />
-              Download PDF
-            </button>
-          )}
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-          {pdfUrl ? (
-            <>
-              <canvas ref={canvasRef} className="mx-auto max-w-full" />
-              {pageControls}
-            </>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-96">
-              <UserCircle className="w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">
-                {isAdmin
-                  ? "Upload a PDF to begin presenting"
-                  : "Waiting for presenter to upload a PDF"}
-              </p>
-            </div>
-          )}
         </div>
       </div>
 
@@ -463,12 +554,14 @@ const PDFViewer = () => {
         )}
       </AnimatePresence>
 
-      {showAdminLogin && (
-        <AdminLoginModal
-          onLogin={handleLogin}
-          onClose={() => setShowAdminLogin(false)}
-        />
-      )}
+      <AnimatePresence>
+        {showAdminLogin && (
+          <AdminLoginModal
+            onLogin={handleLogin}
+            onClose={() => setShowAdminLogin(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
