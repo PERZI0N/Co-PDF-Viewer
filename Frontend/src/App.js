@@ -243,20 +243,19 @@ const PDFViewer = () => {
         console.error("Failed to fetch last uploaded PDF:", error);
       }
     };
-
-    //fetch if no pdf is currently loaded
     if (!pdfUrl && activeUsers > 1) {
       fetchLastUploadedPDF();
-    } else if (activeUsers == 1) {
+    } else if (activeUsers <= 1 && !isAdmin) {
       const timeoutId = setTimeout(() => {
         setPdfUrl("");
-        showToast("Since no admin, the pdf will dissapear")
         setPageNumber(1);
+        showToast("No presenter active, presentation cleared");
       }, 3000);
-      // Cleanup timeout to prevent memory leaks
+
       return () => clearTimeout(timeoutId);
     }
-  }, [pdfUrl, activeUsers]);
+    console.log(adminExists)
+  }, [pdfUrl, activeUsers, adminExists, showToast]);
 
   const connectWebSocket = useCallback(() => {
     if (reconnectAttempts >= CONFIG.MAX_RECONNECT_ATTEMPTS) {
@@ -316,6 +315,10 @@ const PDFViewer = () => {
               if (data.isAdmin) showToast("You are now the presenter");
             }
             break;
+          case "admin_exists":
+            setAdminExists(Boolean(data.isAdmin)); // Ensure boolean conversion
+            break;
+
           case "new_pdf":
             if (data.filename) {
               const pdfPath = `http://localhost:8080/uploads/${data.filename}`;
@@ -336,6 +339,20 @@ const PDFViewer = () => {
 
     wsRef.current = websocket;
   }, [reconnectAttempts, showToast, loadPdf, renderPage, pageNumber, isAdmin]);
+   const renderAdminStatusIndicator = () => {
+     return (
+       <div className="flex items-center space-x-2">
+         <div
+           className={`w-3 h-3 rounded-full ${
+             adminExists ? "bg-green-500" : "bg-gray-300"
+           }`}
+         />
+         <span className="text-sm text-gray-600 dark:text-gray-300">
+           {adminExists ? "Presenter Active" : "No Presenter"}
+         </span>
+       </div>
+     );
+   };
   const handleFileUpload = useCallback(
     async (event) => {
       const file = event.target.files[0];
