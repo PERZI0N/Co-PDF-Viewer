@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,7 +23,8 @@ import {
 } from "lucide-react";
 
 //connecting to pdfjslib
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js";
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js";
 const CONFIG = {
   WEBSOCKET_URL: "ws://localhost:8080/ws",
   UPLOAD_URL: "http://localhost:8080/upload",
@@ -126,6 +133,7 @@ const PDFViewer = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [activeUsers, setActiveUsers] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminExists, setAdminExists] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [scale, setScale] = useState(1);
@@ -212,6 +220,43 @@ const PDFViewer = () => {
     },
     [renderPage, showToast, pageNumber]
   );
+
+  useEffect(() => {
+    const fetchLastUploadedPDF = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/last-pdf");
+        if (response.ok) {
+          const data = await response.json();
+          const pdfPath = `http://localhost:8080/uploads/${data.filename}`;
+          setPdfUrl(pdfPath);
+          if (wsRef.current?.readyState === WebSocket.OPEN) {
+            wsRef.current.send(
+              JSON.stringify({
+                type: "new_pdf",
+                filename: data.filename,
+                currentPage: 1,
+              })
+            );
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch last uploaded PDF:", error);
+      }
+    };
+
+    //fetch if no pdf is currently loaded
+    if (!pdfUrl && activeUsers > 1) {
+      fetchLastUploadedPDF();
+    } else if (activeUsers == 1) {
+      const timeoutId = setTimeout(() => {
+        setPdfUrl("");
+        showToast("Since no admin, the pdf will dissapear")
+        setPageNumber(1);
+      }, 3000);
+      // Cleanup timeout to prevent memory leaks
+      return () => clearTimeout(timeoutId);
+    }
+  }, [pdfUrl, activeUsers]);
 
   const connectWebSocket = useCallback(() => {
     if (reconnectAttempts >= CONFIG.MAX_RECONNECT_ATTEMPTS) {
@@ -355,7 +400,7 @@ const PDFViewer = () => {
     },
     [numPages, pageNumber, isAdmin, renderPage]
   );
-// function to handle the login
+  // function to handle the login
   const handleLogin = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(
@@ -385,7 +430,7 @@ const PDFViewer = () => {
       loadPdf(pdfUrl);
     }
   }, [pdfUrl, loadPdf]);
-// the actual control to navigate around the pdf
+  // the actual control to navigate around the pdf
   const pageControls = useMemo(
     () => (
       <div className="mt-4 flex items-center justify-center space-x-4">
