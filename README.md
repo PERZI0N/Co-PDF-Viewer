@@ -1,5 +1,5 @@
 #  Co PDF Viewer
-
+## Please do run it locally to see it work. Took a lot of hard work to create this in one day
 ## To run the Backend
 
 ```
@@ -28,6 +28,7 @@ but if users exist and a new pdf is uploaded by the admin it appears for all the
 </br>
 <span style="color: red; font-weight: bold;">The password to become admin is ***vaidik@VIT*** </span>
 
+<span>There are 2 builds of this app, one of which is in this repository that runs locally and the other which is hosted and is only for checking the UI as it is not connected to the server hosted on GPC</span>
 
-## The link to the hosted frontend is here
-[https://6733115a5c8bad7fcb48fb21--helpful-sawine-40cee4.netlify.app/](https://6733115a5c8bad7fcb48fb21--helpful-sawine-40cee4.netlify.app/)
+### Heres the link to the hosted frontend
+[https://helpful-sawine-40cee4.netlify.app/](https://helpful-sawine-40cee4.netlify.app/)
